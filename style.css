@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #030a02;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* تأثير الشاشة الفوسفورية القديمة مع انحناء خفيف */
+.crt-screen {
+    width: 100%;
+    max-width: 500px;
+    height: 100%;
+    background: radial-gradient(circle, #0c2b07 0%, #030a02 100%);
+    border: 4px solid #1a3a14;
+    padding: 20px;
+    position: relative;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 0 20px rgba(74, 246, 38, 0.2);
+}
+
+/* تأثير خطوط المسح التلفزيوني القديم (Scanlines) */
+.crt-screen::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 3px, 6px 100%;
+    pointer-events: none;
+}
+
+.terminal-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.chat-area {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 20px;
+    text-transform: uppercase;
+}
+
+/* إخفاء شريط التمرير الافتراضي */
+.chat-area::-webkit-scrollbar {
+    width: 5px;
+}
+.chat-area::-webkit-scrollbar-thumb {
+    background: #2b9318;
+}
+
+.message {
+    margin-bottom: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 15px;
+    letter-spacing: 1px;
+    line-height: 1.4;
+    color: #4af626;
+    text-shadow: 0 0 4px rgba(74, 246, 38, 0.6);
+}
+
+.system, .user {
+    color: #2b9318;
+    font-size: 12px;
+    margin-top: 15px;
+}
+
+.input-area {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #2b9318;
+    padding: 15px 0;
+}
+
+.prompt-symbol {
+    color: #4af626;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 20px;
+    margin-right: 10px;
+    text-shadow: 0 0 5px #4af626;
+}
+
+.terminal-input {
+    background: transparent;
+    border: none;
+    color: #4af626;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 18px;
+    width: 100%;
+    outline: none;
+    text-transform: uppercase;
+    text-shadow: 0 0 4px rgba(74, 246, 38, 0.6);
+}
+
+.button-area {
+    display: flex;
+    gap: 10px;
+    padding-bottom: 5px;
+}
+
+.btn {
+    flex: 1;
+    padding: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid #4af626;
+    color: #4af626;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.btn-transmit {
+    background-color: #4af626;
+    color: #030a02;
+    box-shadow: 0 0 10px rgba(74, 246, 38, 0.4);
+}
+
+.btn-burn:hover {
+    background-color: rgba(74, 246, 38, 0.1);
+}
