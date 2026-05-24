@@ -1,4 +1,4 @@
-var GEMINI_API_KEY = "AIzaSyAwVzFCuQY-JT1imSoj1tLhb6oPGBjgpPM";
+var GROQ_API_KEY = "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";
 
 function getTime() {
     return new Date().toLocaleTimeString('en-US', { hour12: false });
@@ -14,30 +14,18 @@ function addMessage(cls, text) {
     return div;
 }
 
-function callGemini(userText, callback) {
-    var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY;
-
-    var body = JSON.stringify({
-        system_instruction: {
-            parts: [{
-                text: "You are ELIZA, the famous 1966 psychotherapist chatbot. Be empathetic, ask reflective questions, respond in UPPERCASE ONLY. Be concise, 1-2 sentences max."
-            }]
-        },
-        contents: [{
-            parts: [{ text: userText }]
-        }]
-    });
-
+function callGroq(userText, callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
+    xhr.open("POST", "https://api.groq.com/openai/v1/chat/completions", true);
     xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Authorization", "Bearer " + GROQ_API_KEY);
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 try {
                     var data = JSON.parse(xhr.responseText);
-                    var reply = data.candidates[0].content.parts[0].text.trim().toUpperCase();
+                    var reply = data.choices[0].message.content.trim().toUpperCase();
                     callback(null, reply);
                 } catch (e) {
                     callback("PARSE ERROR");
@@ -57,7 +45,20 @@ function callGemini(userText, callback) {
         callback("NETWORK ERROR. CHECK YOUR CONNECTION.");
     };
 
-    xhr.send(body);
+    xhr.send(JSON.stringify({
+        model: "llama-3.1-8b-instant",
+        messages: [
+            {
+                role: "system",
+                content: "You are ELIZA, the famous 1966 psychotherapist chatbot. Be empathetic, ask reflective questions, respond in UPPERCASE ONLY. Be concise, 1-2 sentences max."
+            },
+            {
+                role: "user",
+                content: userText
+            }
+        ],
+        max_tokens: 150
+    }));
 }
 
 function sendMessage() {
@@ -72,7 +73,7 @@ function sendMessage() {
 
     var waitingDiv = addMessage('waiting', '[ELIZA] COMMUNICATING WITH CORE...');
 
-    callGemini(text, function (err, reply) {
+    callGroq(text, function (err, reply) {
         if (waitingDiv && waitingDiv.parentNode) {
             waitingDiv.parentNode.removeChild(waitingDiv);
         }
