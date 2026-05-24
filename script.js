@@ -1,4 +1,4 @@
-var GEMINI_API_KEY = "AIzaSyBi9vgGulpFnIHAHj4x30fGoGWeO5K30zI";
+var GEMINI_API_KEY = "AIzaSyAwVzFCuQY-JT1imSoj1tLhb6oPGBjgpPM";
 
 function getTime() {
     return new Date().toLocaleTimeString('en-US', { hour12: false });
