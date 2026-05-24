@@ -1,27 +1,32 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// إعداد مفتاح الـ API والنموذج
-const API_KEY = "AIzaSyBi9vgGulpFnIHAHj4x30fGoGWeO5K30zI";
-const aiLog = new GoogleGenerativeAI(API_KEY);
-
 async function getGeminiResponse(userText) {
     try {
-        const model = aiLog.getGenerativeModel({ 
-            model: "gemini-1.5-flash",
-            systemInstruction: "Act as ELIZA, the famous 1966 retro psychotherapist chatbot. Speak in an intellectual, slightly archaic, and therapeutic tone. Respond in uppercase letters. Keep answers focused on the user's emotions and reply in a concise manner."
+        const API_KEY = "AIzaSyBi9vgGulpFnIHAHj4x30fGoGWeO5K30zI";
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                system_instruction: {
+                    parts: [{ text: "Act as ELIZA, the famous 1966 retro psychotherapist chatbot. Speak in an intellectual, slightly archaic, and therapeutic tone. Respond in uppercase letters only. Keep answers focused on the user's emotions and reply concisely in 1-2 sentences." }]
+                },
+                contents: [
+                    { role: "user", parts: [{ text: userText }] }
+                ]
+            })
         });
 
-        const result = await model.generateContent(userText);
-        const response = await result.response;
-        return response.text().trim().toUpperCase();
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text.trim().toUpperCase();
 
     } catch (error) {
-        console.error("Gemini SDK Error:", error);
+        console.error("Gemini Error:", error);
         return "CONNECTION ERROR. TERMINAL UNABLE TO REACH THE AI BRAIN.";
     }
 }
 
-// جعل الأزرار في الـ HTML قادرة على رؤية الوظائف بعد تحويل السكريبت لـ Module
 window.sendMessage = async function() {
     const input = document.getElementById('userInput');
     const chatArea = document.getElementById('chatArea');
@@ -55,7 +60,7 @@ window.clearChat = function() {
     document.getElementById('chatArea').innerHTML = '';
 }
 
-document.getElementById('userInput').addEventListener('keypress', function (e) {
+document.getElementById('userInput').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         window.sendMessage();
     }
