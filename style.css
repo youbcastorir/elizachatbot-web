@@ -6,21 +6,22 @@
     padding: 0;
 }
 
-body {
+html, body {
+    height: 100%;
+    overflow: hidden;
     background-color: #030a02;
+}
+
+body {
     display: flex;
     justify-content: center;
-    align-items: center;
-    /* استخدام dvh لضمان ثبات الواجهة وتجاوبها مع ظهور كيبورد الهاتف */
-    height: 100dvh; 
-    overflow: hidden;
-    position: relative;
+    align-items: flex-start;
 }
 
 .crt-screen {
     width: 100vw;
     max-width: 500px;
-    height: 100dvh; /* تحديث الارتفاع الديناميكي الشامل */
+    height: 100%;
     background: radial-gradient(circle, #0c2b07 0%, #030a02 100%);
     padding: 15px;
     position: relative;
@@ -30,7 +31,6 @@ body {
     overflow: hidden;
 }
 
-/* تأثير خطوط الشاشة الكلاسيكية CRT */
 .crt-screen::before {
     content: " ";
     display: block;
@@ -45,21 +45,22 @@ body {
 .terminal-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    width: 100%;
+    flex: 1;
     overflow: hidden;
+    min-height: 0;
 }
 
-/* منطقة التمرير للمحادثة أصبحت مرنة لتتقلص تلقائياً عند ظهور الكيبورد */
 .chat-area {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding-top: 10px;
     padding-bottom: 10px;
     text-transform: uppercase;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-height: 0;
 }
 
 .chat-area::-webkit-scrollbar {
@@ -77,6 +78,7 @@ body {
     color: #4af626;
     text-shadow: 0 0 5px rgba(74, 246, 38, 0.6);
     word-break: break-word;
+    flex-shrink: 0;
 }
 
 .system, .user {
@@ -85,14 +87,13 @@ body {
     margin-top: 8px;
 }
 
-/* منطقة الإدخال تظل ثابتة ومستقرة */
 .input-area {
     display: flex;
     align-items: center;
     border-top: 1px solid #2b9318;
     padding: 12px 0;
     background: transparent;
-    flex-shrink: 0; /* منع تقلص أو نزول خط الإدخال */
+    flex-shrink: 0;
 }
 
 .prompt-symbol {
@@ -101,6 +102,7 @@ body {
     font-size: 22px;
     margin-right: 10px;
     text-shadow: 0 0 5px #4af626;
+    flex-shrink: 0;
 }
 
 .terminal-input {
@@ -114,12 +116,11 @@ body {
     text-transform: uppercase;
 }
 
-/* منطقة الأزرار ثابتة وتلتصق فوق الكيبورد مباشرة */
 .button-area {
     display: flex;
     gap: 12px;
     padding-bottom: 10px;
-    flex-shrink: 0; /* منع نزول أو اختفاء الأزرار */
+    flex-shrink: 0;
 }
 
 .btn {
@@ -150,4 +151,4 @@ body {
     .message { font-size: 14px; }
     .terminal-input { font-size: 16px; }
     .btn { padding: 12px; font-size: 12px; }
-}
+    }
