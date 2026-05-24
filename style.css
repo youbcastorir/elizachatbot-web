@@ -1,135 +1,238 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
+:root {
+    --green: #00ff41;
+    --dark-green: #003b00;
+    --bg: #0a0a0a;
+    --glow: 0 0 8px #00ff41, 0 0 20px #00ff4155;
+}
+
 * {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
 body {
-    background-color: #030a02;
-    margin: 0;
-    padding: 0;
+    background: #000;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    font-family: 'Share Tech Mono', monospace;
     overflow: hidden;
 }
 
-/* تأثير الشاشة الفوسفورية القديمة مع انحناء خفيف */
-.crt-screen {
-    width: 100%;
-    max-width: 500px;
-    height: 100%;
-    background: radial-gradient(circle, #0c2b07 0%, #030a02 100%);
-    border: 4px solid #1a3a14;
-    padding: 20px;
-    position: relative;
-    box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 0 20px rgba(74, 246, 38, 0.2);
+.scanlines {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.15) 2px,
+        rgba(0, 0, 0, 0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
 }
 
-/* تأثير خطوط المسح التلفزيوني القديم (Scanlines) */
+.crt-screen {
+    width: 100%;
+    max-width: 760px;
+    height: 100vh;
+    background: #050e05;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #00ff4122;
+    border-right: 1px solid #00ff4122;
+    position: relative;
+    overflow: hidden;
+}
+
 .crt-screen::before {
-    content: " ";
-    display: block;
+    content: '';
     position: absolute;
-    top: 0; left: 0; bottom: 0; right: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-    z-index: 2;
-    background-size: 100% 3px, 6px 100%;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 60%, #000 100%);
     pointer-events: none;
+    z-index: 1;
+}
+
+.terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid #00ff4133;
+    background: #020802;
+    flex-shrink: 0;
+}
+
+.header-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #00ff41;
+    opacity: 0.4;
+    box-shadow: var(--glow);
+}
+
+.header-title {
+    color: #00ff4188;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-left: 8px;
 }
 
 .terminal-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    justify-content: space-between;
+    flex: 1;
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+    z-index: 2;
 }
 
 .chat-area {
-    flex-grow: 1;
+    flex: 1;
     overflow-y: auto;
-    padding-bottom: 20px;
-    text-transform: uppercase;
+    padding: 20px 20px 10px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    scroll-behavior: smooth;
 }
 
-/* إخفاء شريط التمرير الافتراضي */
 .chat-area::-webkit-scrollbar {
-    width: 5px;
+    width: 4px;
 }
+
+.chat-area::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 .chat-area::-webkit-scrollbar-thumb {
-    background: #2b9318;
+    background: #00ff4144;
+    border-radius: 2px;
 }
 
 .message {
-    margin-bottom: 8px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 15px;
-    letter-spacing: 1px;
-    line-height: 1.4;
-    color: #4af626;
-    text-shadow: 0 0 4px rgba(74, 246, 38, 0.6);
+    font-size: 14px;
+    line-height: 1.6;
+    animation: fadeIn 0.2s ease;
 }
 
-.system, .user {
-    color: #2b9318;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message.system {
+    color: #00ff4166;
     font-size: 12px;
-    margin-top: 15px;
+    margin-top: 10px;
+    letter-spacing: 1px;
+}
+
+.message.user {
+    color: #00ff4166;
+    font-size: 12px;
+    margin-top: 10px;
+    letter-spacing: 1px;
+}
+
+.message.text {
+    color: #00cc33;
+    padding-left: 4px;
+}
+
+.message.reply {
+    color: var(--green);
+    text-shadow: var(--glow);
+    padding-left: 4px;
+    line-height: 1.8;
+}
+
+.message.waiting {
+    color: #00ff4188;
+    font-size: 12px;
 }
 
 .input-area {
     display: flex;
     align-items: center;
-    border-top: 1px solid #2b9318;
-    padding: 15px 0;
+    padding: 12px 20px;
+    border-top: 1px solid #00ff4122;
+    gap: 10px;
+    background: #020802;
 }
 
 .prompt-symbol {
-    color: #4af626;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 20px;
-    margin-right: 10px;
-    text-shadow: 0 0 5px #4af626;
+    color: var(--green);
+    font-size: 16px;
+    text-shadow: var(--glow);
+    flex-shrink: 0;
 }
 
 .terminal-input {
+    flex: 1;
     background: transparent;
     border: none;
-    color: #4af626;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 18px;
-    width: 100%;
     outline: none;
-    text-transform: uppercase;
-    text-shadow: 0 0 4px rgba(74, 246, 38, 0.6);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    caret-color: var(--green);
+    letter-spacing: 1px;
+}
+
+.terminal-input::placeholder {
+    color: #00ff4133;
 }
 
 .button-area {
     display: flex;
-    gap: 10px;
-    padding-bottom: 5px;
+    gap: 0;
+    flex-shrink: 0;
 }
 
 .btn {
     flex: 1;
-    padding: 12px;
+    padding: 14px;
+    border: none;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 2px;
     cursor: pointer;
-    background: transparent;
-    border: 1px solid #4af626;
-    color: #4af626;
-    text-transform: uppercase;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
 }
 
-.btn-transmit {
-    background-color: #4af626;
-    color: #030a02;
-    box-shadow: 0 0 10px rgba(74, 246, 38, 0.4);
+.btn-burn {
+    background: #0a0a0a;
+    color: #00ff4166;
+    border-top: 1px solid #00ff4122;
 }
 
 .btn-burn:hover {
-    background-color: rgba(74, 246, 38, 0.1);
+    background: #0f0f0f;
+    color: #ff4444;
+}
+
+.btn-transmit {
+    background: #003b00;
+    color: var(--green);
+    border-top: 1px solid #00ff4133;
+    text-shadow: var(--glow);
+}
+
+.btn-transmit:hover {
+    background: #005500;
+    box-shadow: inset 0 0 20px #00ff4122;
+}
+
+.btn-transmit:active {
+    transform: scale(0.98);
 }

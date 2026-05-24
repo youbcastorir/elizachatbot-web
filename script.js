@@ -1,67 +1,96 @@
-async function getGeminiResponse(userText) {
-    try {
-        const API_KEY = "AIzaSyAwVzFCuQY-JT1imSoj1tLhb6oPGBjgpPM";
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+var GEMINI_API_KEY = "AIzaSyBi9vgGulpFnIHAHj4x30fGoGWeO5K30zI";
 
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                system_instruction: {
-                    parts: [{ text: "Act as ELIZA, the famous 1966 retro psychotherapist chatbot. Speak in an intellectual, slightly archaic, and therapeutic tone. Respond in uppercase letters only. Keep answers focused on the user's emotions and reply concisely in 1-2 sentences." }]
-                },
-                contents: [
-                    { role: "user", parts: [{ text: userText }] }
-                ]
-            })
-        });
-
-        const data = await response.json();
-        return data.candidates[0].content.parts[0].text.trim().toUpperCase();
-
-    } catch (error) {
-        console.error("Gemini Error:", error);
-        return "CONNECTION ERROR. TERMINAL UNABLE TO REACH THE AI BRAIN.";
-    }
+function getTime() {
+    return new Date().toLocaleTimeString('en-US', { hour12: false });
 }
 
-window.sendMessage = async function() {
-    const input = document.getElementById('userInput');
-    const chatArea = document.getElementById('chatArea');
-    const text = input.value.trim();
+function addMessage(cls, text) {
+    var chatArea = document.getElementById('chatArea');
+    var div = document.createElement('div');
+    div.className = 'message ' + cls;
+    div.textContent = text;
+    chatArea.appendChild(div);
+    chatArea.scrollTop = chatArea.scrollHeight;
+    return div;
+}
 
-    if (text === '') return;
+function callGemini(userText, callback) {
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY;
 
-    const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+    var body = JSON.stringify({
+        system_instruction: {
+            parts: [{
+                text: "You are ELIZA, the famous 1966 psychotherapist chatbot. Be empathetic, ask reflective questions, respond in UPPERCASE ONLY. Be concise, 1-2 sentences max."
+            }]
+        },
+        contents: [{
+            parts: [{ text: userText }]
+        }]
+    });
 
-    chatArea.innerHTML += `<div class="message user">[USER] ${time}</div>`;
-    chatArea.innerHTML += `<div class="message text">${text}</div>`;
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
 
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    var reply = data.candidates[0].content.parts[0].text.trim().toUpperCase();
+                    callback(null, reply);
+                } catch (e) {
+                    callback("PARSE ERROR");
+                }
+            } else {
+                try {
+                    var errData = JSON.parse(xhr.responseText);
+                    callback("API ERROR: " + (errData.error && errData.error.message ? errData.error.message : xhr.status));
+                } catch (e) {
+                    callback("HTTP ERROR: " + xhr.status);
+                }
+            }
+        }
+    };
+
+    xhr.onerror = function () {
+        callback("NETWORK ERROR. CHECK YOUR CONNECTION.");
+    };
+
+    xhr.send(body);
+}
+
+function sendMessage() {
+    var input = document.getElementById('userInput');
+    var text = input.value.trim();
+    if (!text) return;
+
+    var time = getTime();
+    addMessage('user', '[USER] ' + time);
+    addMessage('text', text);
     input.value = '';
-    chatArea.scrollTop = chatArea.scrollHeight;
 
-    const waitingId = "waiting-" + Date.now();
-    chatArea.innerHTML += `<div class="message system" id="${waitingId}">[ELIZA] COMMUNICATING WITH CORE...</div>`;
-    chatArea.scrollTop = chatArea.scrollHeight;
+    var waitingDiv = addMessage('waiting', '[ELIZA] COMMUNICATING WITH CORE...');
 
-    const aiReply = await getGeminiResponse(text);
-
-    const waitingElement = document.getElementById(waitingId);
-    if (waitingElement) waitingElement.remove();
-
-    chatArea.innerHTML += `<div class="message system">[ELIZA] ${time}</div>`;
-    chatArea.innerHTML += `<div class="message reply">${aiReply}</div>`;
-    chatArea.scrollTop = chatArea.scrollHeight;
+    callGemini(text, function (err, reply) {
+        if (waitingDiv && waitingDiv.parentNode) {
+            waitingDiv.parentNode.removeChild(waitingDiv);
+        }
+        if (err) {
+            addMessage('system', '[ELIZA] ' + getTime());
+            addMessage('reply', 'CONNECTION ERROR: ' + err);
+        } else {
+            addMessage('system', '[ELIZA] ' + getTime());
+            addMessage('reply', reply);
+        }
+    });
 }
 
-window.clearChat = function() {
+function clearChat() {
     document.getElementById('chatArea').innerHTML = '';
+    addMessage('system', '[ELIZA] RECORDS BURNED. NEW SESSION.');
 }
 
-document.getElementById('userInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        window.sendMessage();
-    }
+document.getElementById('userInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') sendMessage();
 });

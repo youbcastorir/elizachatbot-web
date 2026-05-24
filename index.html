@@ -3,29 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELIZA Chatbot</title>
+    <title>ELIZA — Psychotherapist Terminal</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="scanlines"></div>
     <div class="crt-screen">
+        <div class="terminal-header">
+            <span class="header-dot"></span>
+            <span class="header-dot"></span>
+            <span class="header-dot"></span>
+            <span class="header-title">ELIZA PSYCHOTHERAPIST v1.0 — 1966</span>
+        </div>
         <div class="terminal-container">
             <div class="chat-area" id="chatArea">
-                <div class="message system">[ELIZA] 14:03:15</div>
-                <div class="message reply">WHY DO YOU SAY YOU FEEL AFRAID OF THE TECHNOLOGY SURROUNDING YOU?</div>
+                <div class="message system">[ELIZA] SYSTEM ONLINE</div>
+                <div class="message reply">GOOD DAY. I AM ELIZA. HOW CAN I HELP YOU TODAY?</div>
             </div>
-
             <div class="input-area">
-                <span class="prompt-symbol">></span>
+                <span class="prompt-symbol">&gt;</span>
                 <input type="text" id="userInput" class="terminal-input" placeholder="TYPE YOUR RESPONSE..." autofocus autocomplete="off">
             </div>
-
             <div class="button-area">
                 <button class="btn btn-burn" onclick="clearChat()">BURN RECORDS</button>
                 <button class="btn btn-transmit" onclick="sendMessage()">TRANSMIT</button>
             </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
