@@ -11,22 +11,23 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    height: -webkit-fill-available; /* حل مشكلة الارتفاع في متصفحات الموبايل */
+    /* استخدام dvh لضمان ثبات الواجهة وتجاوبها مع ظهور كيبورد الهاتف */
+    height: 100dvh; 
     overflow: hidden;
+    position: relative;
 }
 
 .crt-screen {
     width: 100vw;
     max-width: 500px;
-    height: 100vh;
-    height: -webkit-fill-available;
+    height: 100dvh; /* تحديث الارتفاع الديناميكي الشامل */
     background: radial-gradient(circle, #0c2b07 0%, #030a02 100%);
-    padding: 20px;
+    padding: 15px;
     position: relative;
-    box-shadow: inset 0 0 40px rgba(0,0,0,0.9);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 /* تأثير خطوط الشاشة الكلاسيكية CRT */
@@ -45,19 +46,20 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
-    justify-content: space-between;
+    width: 100%;
+    overflow: hidden;
 }
 
-/* تحسين منطقة التمرير للمحادثة وتوزيع المساحة */
+/* منطقة التمرير للمحادثة أصبحت مرنة لتتقلص تلقائياً عند ظهور الكيبورد */
 .chat-area {
-    flex-grow: 1;
+    flex: 1;
     overflow-y: auto;
     padding-top: 10px;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
     text-transform: uppercase;
     display: flex;
     flex-direction: column;
-    gap: 12px; /* إضافة مسافة مريحة بين الأسطر */
+    gap: 12px;
 }
 
 .chat-area::-webkit-scrollbar {
@@ -67,10 +69,9 @@ body {
     background: #2b9318;
 }
 
-/* تكبير حجم الخط ليتناسب مع شاشة الموبايل القريبة من العين */
 .message {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 16px; /* تكبير الخط قليلاً */
+    font-size: 16px;
     letter-spacing: 0.8px;
     line-height: 1.5;
     color: #4af626;
@@ -80,18 +81,18 @@ body {
 
 .system, .user {
     color: #2b9318;
-    font-size: 13px; /* تكبير التوقيت والمسميات */
+    font-size: 13px;
     margin-top: 8px;
 }
 
-/* تحسين وتكبير خط الإدخال */
+/* منطقة الإدخال تظل ثابتة ومستقرة */
 .input-area {
     display: flex;
     align-items: center;
     border-top: 1px solid #2b9318;
-    padding: 16px 0;
-    margin-bottom: 5px;
+    padding: 12px 0;
     background: transparent;
+    flex-shrink: 0; /* منع تقلص أو نزول خط الإدخال */
 }
 
 .prompt-symbol {
@@ -107,22 +108,23 @@ body {
     border: none;
     color: #4af626;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 18px; /* حجم مريح للكتابة على كيبورد الهاتف */
+    font-size: 18px;
     width: 100%;
     outline: none;
     text-transform: uppercase;
 }
 
-/* تنسيق الأزرار السفلية */
+/* منطقة الأزرار ثابتة وتلتصق فوق الكيبورد مباشرة */
 .button-area {
     display: flex;
     gap: 12px;
-    padding-bottom: max(10px, env(safe-area-inset-bottom)); /* الحفاظ على مسافة آمنة أسفل الشاشة */
+    padding-bottom: 10px;
+    flex-shrink: 0; /* منع نزول أو اختفاء الأزرار */
 }
 
 .btn {
     flex: 1;
-    padding: 15px;
+    padding: 14px;
     font-family: 'Share Tech Mono', monospace;
     font-size: 14px;
     font-weight: bold;
@@ -144,7 +146,6 @@ body {
     background-color: rgba(74, 246, 38, 0.2);
 }
 
-/* تحسينات للشاشات الصغيرة جداً */
 @media (max-width: 360px) {
     .message { font-size: 14px; }
     .terminal-input { font-size: 16px; }
