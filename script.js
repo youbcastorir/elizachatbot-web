@@ -1,6 +1,6 @@
 async function getGeminiResponse(userText) {
     try {
-        const API_KEY = "AIzaSyBi9vgGulpFnIHAHj4x30fGoGWeO5K30zI";
+        const API_KEY = "AIzaSyAwVzFCuQY-JT1imSoj1tLhb6oPGBjgpPM";
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
         const response = await fetch(url, {
