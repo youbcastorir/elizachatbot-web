@@ -3,18 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELIZA — Psychotherapist Terminal</title>
-    <link rel="stylesheet" href="style.css">
+    <title>ELIZA — Classic 1966 Psychotherapist Chatbot</title>
+
+    <!-- ═══ SEO ═══ -->
+    <meta name="description" content="Chat with ELIZA, the original 1966 AI psychotherapist chatbot created by Joseph Weizenbaum at MIT. A faithful recreation running entirely in your browser — no server, no data collection.">
+    <meta name="keywords" content="ELIZA, chatbot, 1966, psychotherapist, AI, Joseph Weizenbaum, MIT, DOCTOR script, pattern matching, classic AI, retro chatbot, terminal">
+    <meta name="author" content="ELIZA Terminal">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://elizachatbot.com/">
+
+    <!-- ═══ Open Graph (Facebook / WhatsApp / LinkedIn) ═══ -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://elizachatbot.com/">
+    <meta property="og:title" content="ELIZA — Classic 1966 Psychotherapist Chatbot">
+    <meta property="og:description" content="Chat with ELIZA, the original AI psychotherapist from 1966. Runs entirely in your browser. No data collected.">
+    <meta property="og:image" content="https://elizachatbot.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="ELIZA Terminal">
+
+    <!-- ═══ Twitter Card ═══ -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://elizachatbot.com/">
+    <meta name="twitter:title" content="ELIZA — Classic 1966 Psychotherapist Chatbot">
+    <meta name="twitter:description" content="Chat with ELIZA, the original AI psychotherapist from 1966. Runs entirely in your browser.">
+    <meta name="twitter:image" content="https://elizachatbot.com/og-image.png">
+
+    <!-- ═══ PWA ═══ -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4af626">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ELIZA">
+
+    <!-- ═══ Schema.org Structured Data ═══ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "ELIZA Psychotherapist Terminal",
+      "url": "https://elizachatbot.com/",
+      "description": "A faithful recreation of the classic 1966 ELIZA psychotherapist chatbot by Joseph Weizenbaum, running entirely in the browser using pattern matching.",
+      "applicationCategory": "Entertainment",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Joseph Weizenbaum",
+        "affiliation": "MIT"
+      }
+    }
+    </script>
+
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    background-color: #030a02;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.crt-screen {
+    width: 100vw;
+    max-width: 500px;
+    height: 100%;
+    background: radial-gradient(circle, #0c2b07 0%, #030a02 100%);
+    padding: 15px;
+    position: relative;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.crt-screen::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+    z-index: 5;
+    background-size: 100% 3px;
+    pointer-events: none;
+}
+
+.terminal-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.chat-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+}
+
+.chat-area::-webkit-scrollbar { width: 4px; }
+.chat-area::-webkit-scrollbar-thumb { background: #2b9318; }
+
+.message {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    letter-spacing: 0.8px;
+    line-height: 1.5;
+    color: #4af626;
+    text-shadow: 0 0 5px rgba(74, 246, 38, 0.6);
+    word-break: break-word;
+    flex-shrink: 0;
+}
+
+.system, .user {
+    color: #2b9318;
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.input-area {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #2b9318;
+    padding: 12px 0;
+    background: transparent;
+    flex-shrink: 0;
+}
+
+.prompt-symbol {
+    color: #4af626;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 22px;
+    margin-right: 10px;
+    text-shadow: 0 0 5px #4af626;
+    flex-shrink: 0;
+}
+
+.terminal-input {
+    background: transparent;
+    border: none;
+    color: #4af626;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 18px;
+    width: 100%;
+    outline: none;
+    text-transform: uppercase;
+}
+
+.button-area {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.btn {
+    flex: 1;
+    padding: 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid #4af626;
+    color: #4af626;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.btn-transmit {
+    background-color: #4af626;
+    color: #030a02;
+    box-shadow: 0 0 10px rgba(74, 246, 38, 0.3);
+}
+
+.btn-burn:active { background-color: rgba(74, 246, 38, 0.2); }
+
+@media (max-width: 360px) {
+    .message { font-size: 14px; }
+    .terminal-input { font-size: 16px; }
+    .btn { padding: 12px; font-size: 12px; }
+}
+    </style>
 </head>
 <body>
-    <div class="scanlines"></div>
     <div class="crt-screen">
-        <div class="terminal-header">
-            <span class="header-dot"></span>
-            <span class="header-dot"></span>
-            <span class="header-dot"></span>
-            <span class="header-title">ELIZA PSYCHOTHERAPIST v1.0 — 1966</span>
-        </div>
         <div class="terminal-container">
             <div class="chat-area" id="chatArea">
                 <div class="message system">[ELIZA] SYSTEM ONLINE</div>
@@ -30,6 +230,330 @@
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+var lastReply = "";
+var memory = [];
+
+var rules = [
+    {
+        pattern: /\b(hello|hi|hey|greetings|good\s*(day|morning|evening|afternoon))\b/i,
+        responses: [
+            "HOW DO YOU DO. PLEASE TELL ME YOUR PROBLEM.",
+            "HELLO. PLEASE TELL ME YOUR PROBLEM.",
+            "HI. WHAT SEEMS TO BE THE TROUBLE?"
+        ]
+    },
+    {
+        pattern: /\bi need (.*)/i,
+        responses: [
+            "WHY DO YOU NEED {1}?",
+            "WOULD IT REALLY HELP YOU TO GET {1}?",
+            "ARE YOU SURE YOU NEED {1}?",
+            "WHAT WOULD IT MEAN TO YOU IF YOU GOT {1}?"
+        ]
+    },
+    {
+        pattern: /\bwhy don'?t you ([^?]*)/i,
+        responses: [
+            "DO YOU REALLY THINK I DON'T {1}?",
+            "PERHAPS EVENTUALLY I WILL {1}.",
+            "DO YOU REALLY WANT ME TO {1}?"
+        ]
+    },
+    {
+        pattern: /\bwhy can'?t i ([^?]*)/i,
+        responses: [
+            "DO YOU THINK YOU SHOULD BE ABLE TO {1}?",
+            "IF YOU COULD {1}, WHAT WOULD YOU DO?",
+            "I DON'T KNOW — WHY CAN'T YOU {1}?",
+            "HAVE YOU REALLY TRIED?"
+        ]
+    },
+    {
+        pattern: /\bi can'?t ([^?]*)/i,
+        responses: [
+            "HOW DO YOU KNOW YOU CAN'T {1}?",
+            "HAVE YOU TRIED?",
+            "PERHAPS YOU COULD {1} IF YOU TRIED.",
+            "WHAT WOULD IT TAKE FOR YOU TO {1}?"
+        ]
+    },
+    {
+        pattern: /\bi am (.*)|i'm (.*)/i,
+        responses: [
+            "HOW LONG HAVE YOU BEEN {1}?",
+            "DO YOU BELIEVE IT IS NORMAL TO BE {1}?",
+            "DO YOU ENJOY BEING {1}?",
+            "WHY DO YOU TELL ME YOU ARE {1}?"
+        ]
+    },
+    {
+        pattern: /\bi feel (.*)/i,
+        responses: [
+            "TELL ME MORE ABOUT SUCH FEELINGS.",
+            "DO YOU OFTEN FEEL {1}?",
+            "DO YOU ENJOY FEELING {1}?",
+            "WHY DO YOU FEEL {1}?"
+        ]
+    },
+    {
+        pattern: /\bi want (.*)/i,
+        responses: [
+            "WHAT WOULD IT MEAN TO YOU IF YOU GOT {1}?",
+            "WHY DO YOU WANT {1}?",
+            "SUPPOSE YOU GOT {1} SOON — WHAT THEN?",
+            "WHAT IF YOU NEVER GOT {1}?"
+        ]
+    },
+    {
+        pattern: /\bwhat\b([^?]*)\?/i,
+        responses: [
+            "WHY DO YOU ASK?",
+            "DOES THAT QUESTION INTEREST YOU?",
+            "WHAT IS IT YOU REALLY WANT TO KNOW?",
+            "WHAT DO YOU THINK?"
+        ]
+    },
+    {
+        pattern: /\bhow\b([^?]*)\?/i,
+        responses: [
+            "WHY DO YOU ASK THAT?",
+            "WHAT ANSWER WOULD PLEASE YOU MOST?",
+            "HOW DO YOU SUPPOSE?"
+        ]
+    },
+    {
+        pattern: /\b(everyone|everybody|nobody|no one)\b/i,
+        responses: [
+            "REALLY?",
+            "CAN YOU THINK OF ANYONE IN PARTICULAR?",
+            "WHO SPECIFICALLY ARE YOU THINKING OF?",
+            "ARE YOU SURE ABOUT THAT?"
+        ]
+    },
+    {
+        pattern: /\b(always|never)\b/i,
+        responses: [
+            "CAN YOU THINK OF A SPECIFIC EXAMPLE?",
+            "ALWAYS?",
+            "WHEN EXACTLY?"
+        ]
+    },
+    {
+        pattern: /\bmy (.*) (is|are|was|were) (.*)/i,
+        responses: [
+            "TELL ME MORE ABOUT YOUR {1}.",
+            "HOW DOES YOUR {1} MAKE YOU FEEL?",
+            "DOES IT CONCERN YOU THAT YOUR {1} IS {3}?"
+        ]
+    },
+    {
+        pattern: /\bmy (mother|father|mom|dad|brother|sister|family|parents?)\b/i,
+        responses: [
+            "TELL ME MORE ABOUT YOUR FAMILY.",
+            "HOW DO YOU GET ALONG WITH YOUR {1}?",
+            "HOW DO YOU FEEL ABOUT YOUR {1}?"
+        ]
+    },
+    {
+        pattern: /\b(are you|do you|can you|will you)\b([^?]*)\?/i,
+        responses: [
+            "WHY DOES IT MATTER WHETHER I {2}?",
+            "WHAT IF I WERE NOT?",
+            "PERHAPS YOU BELIEVE I {2} — DO YOU?"
+        ]
+    },
+    {
+        pattern: /\b(because|since)\b(.*)/i,
+        responses: [
+            "IS THAT THE REAL REASON?",
+            "WHAT OTHER REASONS MIGHT THERE BE?",
+            "DOES THAT REASON EXPLAIN ANYTHING ELSE?"
+        ]
+    },
+    {
+        pattern: /\b(sorry|apologize|apologies)\b/i,
+        responses: [
+            "PLEASE DON'T APOLOGIZE.",
+            "APOLOGIES ARE NOT NECESSARY.",
+            "WHAT FEELINGS DO YOU HAVE WHEN YOU APOLOGIZE?"
+        ]
+    },
+    {
+        pattern: /\b(dream|dreamed|dreamt|nightmare)\b/i,
+        responses: [
+            "WHAT DOES THAT DREAM SUGGEST TO YOU?",
+            "DO YOU DREAM OFTEN?",
+            "WHAT PERSONS APPEAR IN YOUR DREAMS?",
+            "DO YOU BELIEVE THAT DREAM HAS SOMETHING TO DO WITH YOUR PROBLEM?"
+        ]
+    },
+    {
+        pattern: /\b(yes|yeah|yep|yup|sure|of course)\b/i,
+        responses: [
+            "YOU SEEM QUITE SURE.",
+            "I SEE. PLEASE CONTINUE.",
+            "I UNDERSTAND. TELL ME MORE."
+        ]
+    },
+    {
+        pattern: /\b(no|nope|not really|never mind)\b/i,
+        responses: [
+            "WHY NOT?",
+            "ARE YOU BEING NEGATIVE?",
+            "ARE YOU SURE?"
+        ]
+    },
+    {
+        pattern: /\b(sad|unhappy|depressed|miserable|terrible|awful|horrible)\b/i,
+        responses: [
+            "I AM SORRY TO HEAR THAT.",
+            "DO YOU THINK COMING HERE WILL HELP?",
+            "HOW LONG HAVE YOU FELT THIS WAY?",
+            "TELL ME MORE ABOUT THESE FEELINGS."
+        ]
+    },
+    {
+        pattern: /\b(happy|glad|good|great|wonderful|fantastic|excited)\b/i,
+        responses: [
+            "WHAT MAKES YOU FEEL THAT WAY?",
+            "HOW LONG HAVE YOU FELT THIS WAY?",
+            "DO YOU THINK THAT IS REALLY TRUE?"
+        ]
+    },
+    {
+        pattern: /\b(computer|robot|machine|program|ai|bot)\b/i,
+        responses: [
+            "DO COMPUTERS WORRY YOU?",
+            "WHY DO YOU MENTION COMPUTERS?",
+            "WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEM?"
+        ]
+    },
+    {
+        pattern: /\b(problem|trouble|issue|concern|worry|worried)\b/i,
+        responses: [
+            "TELL ME MORE ABOUT YOUR PROBLEM.",
+            "HOW LONG HAS THIS CONCERNED YOU?",
+            "WHAT DO YOU THINK CAUSED THIS?"
+        ]
+    },
+    {
+        pattern: /\b(remember|forgot|forget|memory)\b/i,
+        responses: [
+            "DO YOU THINK ABOUT THAT OFTEN?",
+            "WHY DO YOU REMEMBER THAT JUST NOW?",
+            "WHAT IN THE PRESENT SITUATION REMINDS YOU OF THAT?"
+        ]
+    },
+    {
+        pattern: /\b(quit|bye|goodbye|exit|leave|done)\b/i,
+        responses: [
+            "GOODBYE. IT WAS NICE TALKING WITH YOU.",
+            "THANK YOU FOR TALKING WITH ME.",
+            "GOODBYE. THIS ENDS OUR SESSION."
+        ]
+    }
+];
+
+var fallbacks = [
+    "PLEASE CONTINUE.",
+    "I SEE. TELL ME MORE.",
+    "PLEASE GO ON.",
+    "THAT IS QUITE INTERESTING.",
+    "CAN YOU ELABORATE ON THAT?",
+    "I AM NOT SURE I UNDERSTAND YOU FULLY.",
+    "WHY DO YOU SAY THAT?",
+    "HOW DOES THAT MAKE YOU FEEL?",
+    "DOES THAT CONCERN YOU?",
+    "WHAT DO YOU MEAN BY THAT?",
+    "HAVE YOU DISCUSSED THIS WITH ANYONE ELSE?",
+    "WHAT DOES THAT SUGGEST TO YOU?"
+];
+
+function storeMemory(text) {
+    var triggers = /\b(my (mother|father|friend|brother|sister|wife|husband|partner|boss)|i feel|i am|i want|i need)\b/i;
+    if (triggers.test(text) && memory.length < 5) memory.push(text.toUpperCase());
+}
+
+function getMemoryResponse() {
+    if (memory.length > 0 && Math.random() < 0.2) {
+        var mem = memory[Math.floor(Math.random() * memory.length)];
+        return 'EARLIER YOU SAID: "' + mem + '" — DOES THAT STILL CONCERN YOU?';
+    }
+    return null;
+}
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function reflect(text) {
+    if (!text) return "";
+    var map = [
+        [/\bi\b/gi, "YOU"], [/\bme\b/gi, "YOU"], [/\bmy\b/gi, "YOUR"],
+        [/\bmine\b/gi, "YOURS"], [/\bam\b/gi, "ARE"], [/\bwas\b/gi, "WERE"],
+        [/\bi'?ve\b/gi, "YOU HAVE"], [/\bi'?ll\b/gi, "YOU WILL"], [/\bi'?d\b/gi, "YOU WOULD"]
+    ];
+    var result = text;
+    map.forEach(function(p) { result = result.replace(p[0], p[1]); });
+    return result.toUpperCase().trim();
+}
+
+function eliza(input) {
+    storeMemory(input);
+    for (var i = 0; i < rules.length; i++) {
+        var rule = rules[i];
+        var match = input.match(rule.pattern);
+        if (match) {
+            var template = pick(rule.responses);
+            var reply = template
+                .replace(/\{0\}/g, (match[0] || "").toUpperCase())
+                .replace(/\{1\}/g, reflect(match[1] || match[2] || ""))
+                .replace(/\{2\}/g, reflect(match[2] || match[3] || ""))
+                .replace(/\{3\}/g, reflect(match[3] || match[4] || ""));
+            if (reply !== lastReply) { lastReply = reply; return reply; }
+        }
+    }
+    var memReply = getMemoryResponse();
+    if (memReply) return memReply;
+    var fb = pick(fallbacks);
+    lastReply = fb;
+    return fb;
+}
+
+function getTime() { return new Date().toLocaleTimeString('en-US', { hour12: false }); }
+
+function addMessage(cls, text) {
+    var chatArea = document.getElementById('chatArea');
+    var div = document.createElement('div');
+    div.className = 'message ' + cls;
+    div.textContent = text;
+    chatArea.appendChild(div);
+    chatArea.scrollTop = chatArea.scrollHeight;
+    return div;
+}
+
+function sendMessage() {
+    var input = document.getElementById('userInput');
+    var text = input.value.trim();
+    if (!text) return;
+    addMessage('user', '[USER] ' + getTime());
+    addMessage('text', text.toUpperCase());
+    input.value = '';
+    setTimeout(function() {
+        addMessage('system', '[ELIZA] ' + getTime());
+        addMessage('reply', eliza(text));
+    }, 300 + Math.floor(Math.random() * 500));
+}
+
+function clearChat() {
+    memory = []; lastReply = "";
+    document.getElementById('chatArea').innerHTML = '';
+    addMessage('system', '[ELIZA] RECORDS BURNED. NEW SESSION.');
+}
+
+document.getElementById('userInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') sendMessage();
+});
+    </script>
 </body>
 </html>
