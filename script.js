@@ -1,4 +1,4 @@
-var GROQ_API_KEY = "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";
+var conversationHistory = [];
 
 function getTime() {
     return new Date().toLocaleTimeString('en-US', { hour12: false });
@@ -14,18 +14,20 @@ function addMessage(cls, text) {
     return div;
 }
 
-function callGroq(userText, callback) {
+function callAnthropic(userText, callback) {
+    conversationHistory.push({ role: "user", content: userText });
+
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://api.groq.com/openai/v1/chat/completions", true);
+    xhr.open("POST", "https://api.anthropic.com/v1/messages", true);
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("Authorization", "Bearer " + GROQ_API_KEY);
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 try {
                     var data = JSON.parse(xhr.responseText);
-                    var reply = data.choices[0].message.content.trim().toUpperCase();
+                    var reply = data.content[0].text.trim().toUpperCase();
+                    conversationHistory.push({ role: "assistant", content: reply });
                     callback(null, reply);
                 } catch (e) {
                     callback("PARSE ERROR");
@@ -46,18 +48,10 @@ function callGroq(userText, callback) {
     };
 
     xhr.send(JSON.stringify({
-        model: "llama-3.1-8b-instant",
-        messages: [
-            {
-                role: "system",
-                content: "You are ELIZA, the famous 1966 psychotherapist chatbot. Be empathetic, ask reflective questions, respond in UPPERCASE ONLY. Be concise, 1-2 sentences max."
-            },
-            {
-                role: "user",
-                content: userText
-            }
-        ],
-        max_tokens: 150
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 150,
+        system: "You are ELIZA, the famous 1966 psychotherapist chatbot created by Joseph Weizenbaum at MIT. Be empathetic, use reflective questioning techniques. Respond in UPPERCASE ONLY. Be concise, 1-2 sentences max. Reflect the user's words back as questions. Use phrases like TELL ME MORE ABOUT..., WHY DO YOU FEEL..., HOW DOES THAT MAKE YOU FEEL?",
+        messages: conversationHistory
     }));
 }
 
@@ -73,7 +67,7 @@ function sendMessage() {
 
     var waitingDiv = addMessage('waiting', '[ELIZA] COMMUNICATING WITH CORE...');
 
-    callGroq(text, function (err, reply) {
+    callAnthropic(text, function (err, reply) {
         if (waitingDiv && waitingDiv.parentNode) {
             waitingDiv.parentNode.removeChild(waitingDiv);
         }
@@ -88,6 +82,7 @@ function sendMessage() {
 }
 
 function clearChat() {
+    conversationHistory = [];
     document.getElementById('chatArea').innerHTML = '';
     addMessage('system', '[ELIZA] RECORDS BURNED. NEW SESSION.');
 }
